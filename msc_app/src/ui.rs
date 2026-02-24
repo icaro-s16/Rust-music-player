@@ -44,7 +44,6 @@ impl App{
                 botton_inner_layout[0].y + 1
             )),
         }
-        // Renderização da scrollbar lateral
         frame.render_stateful_widget(
         Scrollbar::new(ratatui::widgets::ScrollbarOrientation::VerticalRight)
             .begin_symbol(Some("↑"))
@@ -56,18 +55,15 @@ impl App{
 }
 
 
-// Implementando o método principal para ordenar a renderização da interface
-// Trait aplicado a uma referência ao nosso app para não alterar seus campos
+
 impl Widget for &App{
     fn render(self, area: Rect, buf: &mut Buffer){
-        // Títulos das subseções de tela
         let title_info = Line::from(" Info ".bold());
         let title_timeline = Line::from(" TimeLine ".bold());
         let title_playlist = Line::from(" Playlist ".bold());
         let title_controls = Line::from(" Controls ".bold());
         let title_command_input = Line::from(" Command Input ".bold());
 
-        // Setando o estilo de cada bloco de informação
         let info_block = Block::bordered()
             .title(title_info.left_aligned())
             .border_type(ratatui::widgets::BorderType::Double);
@@ -84,8 +80,6 @@ impl Widget for &App{
             .title(title_command_input.left_aligned())
             .border_type(ratatui::widgets::BorderType::Double);
 
-        // Layout de divisão da tela
-        // Divisão principal da tela
         let max_size_window = Layout::default()
             .direction(Direction::Horizontal)
             .constraints(vec![
@@ -100,7 +94,6 @@ impl Widget for &App{
                 Constraint::Length(8)
             ])
             .split(max_size_window[0]);
-        // Divisião principal da parte superior
         let top_inner_layout = Layout::default()
             .direction(Direction::Horizontal)
             .constraints(vec![
@@ -108,7 +101,6 @@ impl Widget for &App{
                 Constraint::Percentage(50)
             ])
             .split(main_layout[0]);
-        // Divisão principal da parte inferior
         let botton_inner_layout = Layout::default()
                 .direction(Direction::Vertical)
                 .constraints(vec![
@@ -116,8 +108,6 @@ impl Widget for &App{
                     Constraint::Percentage(60)
                 ])
                 .split(main_layout[1]);
-        // Divisões internas dos layouts botton_inner_layout e top_inner_layout
-        // Divisão interna da parte superior : top_inner_layout
         let div_left_side_top_inner_layout = Layout::default()
                     .direction(Direction::Vertical)
                     .constraints(vec![
@@ -126,15 +116,12 @@ impl Widget for &App{
                     ])
                     .split(top_inner_layout[0]);
 
-        // Texto informando os comandos
         Paragraph::new("[TAB] Focus  [Space] Play/Pause  [Ret] Load  [n/p] Skip  [Arrows] Scroll/Vol  [q] Quit".bold())
                         .block(controls_block.padding(Padding::new(0, 0, botton_inner_layout[1].height/3, 0)))
                         .alignment(Alignment::Center)
                         .render(botton_inner_layout[1], buf);
-        // Local para renderizar as listas de músicas 
-        // Correspondendo a sessão de playlist
+
         let mut playlist_vec_clone = self.play_list_vec.clone();
-        // Transforma no tipo line e adiciona o > caso seja a música atual
         let formated_playlist_vec : Vec<_> = playlist_vec_clone
         .iter_mut()
         .enumerate()
@@ -156,7 +143,6 @@ impl Widget for &App{
                         .render(top_inner_layout[1], buf);
                         
         
-        // Local correspondente ao input da playlist
         Paragraph::new(self.user_playlist_input.as_str())
             .style(match self.input_mode {
                 InputMode::Normal => Style::default(),
@@ -170,7 +156,6 @@ impl Widget for &App{
             String::from("A r t i s t :  "),
             String::from("A l b u m :  "),
         ];
-        // Adiciona as informações da música atual
         if !self.current_mcs_infor.is_empty() {
             for (index, information) in self.current_mcs_infor.clone().iter().enumerate(){
                 if index < 3 {
@@ -185,7 +170,6 @@ impl Widget for &App{
         Paragraph::new(lines_vec)
             .block(info_block.clone().padding(Padding::new(5, 0, div_left_side_top_inner_layout[0].height / 6, 0)))
             .render(div_left_side_top_inner_layout[0], buf);
-        // Espaço de exibição de estadp
         let mut state_text = match self.msc_state {
             MscState::Paused => String::from("[ STATUS : PAUSED ]"), 
             MscState::Playing => String::from("[ STATUS : PLAYING ]"),
@@ -196,7 +180,6 @@ impl Widget for &App{
             .block(info_block.padding(Padding::new(4, 0, (div_left_side_top_inner_layout[0].height as f64 / 1.8 ) as u16 , 0)))
             .render(div_left_side_top_inner_layout[0], buf);
 
-        // Desenhando o tempo total da música
         let total_seconds_current_msc = (self.msc_time / 1_000) % 60;
         let total_min_current_msc = self.msc_time / 60_000 ;
         let mut total_seconds_current_msc_as_st = total_seconds_current_msc.to_string();
@@ -208,7 +191,6 @@ impl Widget for &App{
             total_seconds_current_msc_as_st.insert(0, '0');
         }
         let current_total_time_as_st = format!(" {}:{}", total_min_current_msc_as_st, total_seconds_current_msc_as_st);
-        // Desenhando o tempo decorrido da música
         let seconds_passed = (self.current_msc_time / 1_000) % 60;
         let min_passed = self.current_msc_time / 60_000;
         let mut seconds_passed_as_st = seconds_passed.to_string();
@@ -229,7 +211,6 @@ impl Widget for &App{
                 timeline.push('-');
             }
         }
-        // Area de timeline, tempo de música
         timeline.push_str(&current_total_time_as_st);
         Paragraph::new(timeline.bold())
             .block(timeline_block.padding(Padding::new(1, 0, div_left_side_top_inner_layout[1].height/3, 0)))
