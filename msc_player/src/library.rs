@@ -12,7 +12,7 @@ pub fn get_msc_duration(mut file : File) -> u128{
 }
 
 
-// Pega as informações da música atual Nome, banda e album
+
 pub fn get_msc_information(mut file : File) -> Vec<String>{
     let mut information_vec = vec![];
     if let Ok(tagged_file) = lofty::read_from(&mut file){
@@ -44,7 +44,6 @@ pub fn msc_files_list(dir_path : &str ) -> io::Result<Vec<File>>{
     // Some(fs::File::open(entry.unwrap().path()).unwrap())
 }
 
-// Função para verificar se o tipo do arquivo é mp3 ou mp4
 fn check_msc_file_type(file : &mut File) -> bool{
     let tagged_file = lofty::read_from(file);
     if tagged_file.is_err(){
@@ -56,7 +55,7 @@ fn check_msc_file_type(file : &mut File) -> bool{
     }
 }
 
-// Função para transformar os arquivos em tag, para que possam ser pego os metadados
+
 pub fn tagged_file_msc_list(files_list : &mut Vec<File>) -> Vec<TaggedFile>{
     files_list
     .iter_mut()
@@ -68,7 +67,6 @@ pub fn tagged_file_msc_list(files_list : &mut Vec<File>) -> Vec<TaggedFile>{
     .collect()
 }
 
-// Retorna um Array com o nome das músicas na playlist e numerados 
 pub fn playlist_msc_names(dir_path : &str) -> Vec<String>{
     let mut tagged_files = tagged_file_msc_list(&mut msc_files_list(&dir_path[..]).unwrap_or(Vec::new()));
     let mut files_names : Vec<String> =  tagged_files
