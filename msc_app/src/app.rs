@@ -27,35 +27,23 @@ pub(crate) enum ScrollState{
 
 
 pub struct App{
-    // Input correspondente a pasta da playlist
     pub(super) user_playlist_input : String,
-    // Posição do cursor na área de input
     pub(super) char_index : usize,
-    // Modo de input
     pub(super) input_mode : InputMode,
-    // PlayList Atual do usuário
     pub(super) play_list_vec : Vec<String>,
-    // Vetor de arquivos das músicas
     pub(super) file_msc_vec : Vec<File>,
-    // index da musica atual de acordo com o vetor
     pub(super) current_file_msc_index : usize,
     pub(super) current_msc : Option<File>,
     pub(super) current_mcs_infor : Vec<String>,
-    // Estado atual da música
     pub(super) msc_state : MscState,
     pub(super) msc_sound_value : f32,
-    // Estados relacionados ao scroll da lista de música
     pub(super) scroll_state_window : ScrollState,
     pub(super) scroll_state : ScrollbarState,
     pub(super) vertical_scroll : usize,
-    // Variavel para armazena o sink da musica
     pub(super) msc_audio_device : audio::Audio,
-    // Indicador se a musica foi carregada
     pub(super) msc_is_loaded : bool,
-    // Tempo atual da música
     pub(super) current_msc_time :  u128,
     pub(super) msc_time : u128,
-    // Indicador de saida do programa
     pub(super) exit : bool
 }
 
@@ -94,7 +82,6 @@ impl App{
         }
         Ok(())
     }
-    // Lidar com input unitário do usuário
     pub(super) fn handle_eventes(&mut self) -> io::Result<()>{
         if event::poll(core::time::Duration::from_millis(16))? {
             match event::read()? {
@@ -106,7 +93,6 @@ impl App{
         }
         Ok(())
     }
-    // Lidando com os eventos do teclado
     pub(super) fn handle_key_event(&mut self, key_event : KeyEvent){
         match (self.input_mode.clone(), self.scroll_state_window.clone()){
             (InputMode::Normal, ScrollState::Deactivated)=> match key_event.code{
@@ -158,7 +144,6 @@ impl App{
     }
 
     // Funções para receber uma escrita do usuário
-
     fn move_cursor_left(&mut self){
         let cursor_moved_left = self.char_index.saturating_sub(1);
         self.char_index = self.clamp_cursor(cursor_moved_left);
@@ -200,19 +185,12 @@ impl App{
         self.current_msc = None;
         self.msc_time = 0;
         self.current_msc_time = 0;
-        // Carrega um vetor com os nomes das músicas no presentes no arquivo
         self.play_list_vec = library::playlist_msc_names(&self.user_playlist_input[..]);
-        // Carrega um vetor de tipos File, correspondente às músicas no arquivo
         self.file_msc_vec = library::msc_files_list(&self.user_playlist_input[..]).unwrap_or(Vec::new());
-        // Reseta o valor do index da música atual
         self.current_file_msc_index = 0;
         self.restart_the_current_msc();
-        // Ajusta o scroll de acordo com o tamnho da playlist
         self.scroll_state = self.scroll_state.content_length(self.play_list_vec.len());
     }
-    // Função para mudar de música na playlist
-    // pode tanto avançar quanto voltar uma música
-    // Ajusta as variáveis da struct principal
     fn load_new_msc(&mut self, operation : char){
         
         if (operation == '+' && self.current_file_msc_index != self.play_list_vec.len() - 1) || 
@@ -241,7 +219,6 @@ impl App{
     fn toggle_play_pause(&mut self){
         match self.msc_state {
             MscState::Paused => {
-                // Inicia a música no dispositivo sink
                 if !self.msc_is_loaded && self.current_msc.is_some(){
                     if let Ok(clonned_file) = self.current_msc.as_ref().unwrap().try_clone(){
                         self.msc_audio_device.start_msc(clonned_file).expect("erro");
