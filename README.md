@@ -1,4 +1,4 @@
-# 🐤 Rubber Duck Terminal Music Player 🐤
+# Rust music player
 
 ![Rust](https://img.shields.io/badge/rust-%23000000.svg?style=for-the-badge&logo=rust&logoColor=white)
 ![Ratatui](https://img.shields.io/badge/Ratatui-%23E30B5C.svg?style=for-the-badge&logo=rust&logoColor=white)
