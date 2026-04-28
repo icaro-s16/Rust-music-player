@@ -44,12 +44,12 @@ sudo pacman -S alsa-lib
 
 1. Clone o repositório:
 ```Bash
-git clone https://github.com/icaro-s16/rubber_duck_music_player.git
+git clone https://github.com/icaro-s16/Rust-music-player.git
 ```
 
 2. Entre na pasta:
 ```Bash
-cd  rubber_duck_msc_player
+cd  Rust-music-player
 ```
 
 3. Execute o projeto:
